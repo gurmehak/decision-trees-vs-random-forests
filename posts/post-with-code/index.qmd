@@ -153,7 +153,7 @@ Where `n_estimators`: The number of decision trees in the forest, <br>
 | When you need out-of-bag error estimation      | Random Forest    | Random Forest has built-in out-of-bag (OOB) error estimation, allowing for model validation without a separate validation set. |
 
 
-## Real-word Applications
+## Real-World Applications
 
 * **Healthcare**: <br>
 **Decision Trees**: Used for creating simple diagnostic rules, like checking if a patient has symptoms A, B, and C to predict a condition (e.g., flu or no flu). <br>
