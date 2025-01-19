@@ -1,9 +1,167 @@
 ---
-title: "Post With Code"
-author: "Harlow Malloc"
+title: "Decision Trees Vs. Random Forests"
+author: "Gurmehak"
 date: "2025-01-18"
-categories: [news, code, analysis]
-image: "image.jpg"
+categories: [code, analysis]
+image: "thumbnail.jpg"
 ---
 
-This is a post with executable code.
+# Decision Trees or Random Forests: Which One to Choose?
+
+## Introduction 
+
+Everybody is working on building machine learning models, but what distinguishes an experienced practitioner from a newcomer is the depth of their understanding of algorithms (max_depth of knowledge = 'inf'). Among the many available algorithms, Decision Trees and Random Forests are two of the most commonly used. These models are valued for their simplicity and powerful predictive capabilities, making them popular across industries such as healthcare, finance, marketing, and more.
+
+Both Decision Trees and Random Forests belong to the broader family of supervised learning algorithms. While they share foundational principles, their outcomes can differ significantly, which can impact the performance of your model. Understanding when and why to use each model can make a substantial difference in your machine learning pipeline.
+
+But what’s the logic behind these algorithms, and how do you decide when to use one over the other? No, Decision Trees aren't superior simply because they "decide" things, and Random Forests aren’t inferior because their outputs are "random." There is a deep, well-thought-out logic that drives these algorithms (Random Forests are just a bunch of democratic decision trees). In this article, we will break down both models, explaining their workings, strengths, weaknesses, and ideal use cases. Hopefully by the end of this blog you will undertsand my max_depth joke and be able to make an informed decision when faced with the choice: Decision Tree or Random Forest?
+
+<img src="thumbnail.jpg" width="600" />
+
+*Image credit: Abhishek Sharma from [AnalyticsVidhya](https://www.analyticsvidhya.com/blog/2020/05/decision-tree-vs-random-forest-algorithm/)
+
+## What are Decision Trees?
+
+A Decision Tree is a supervised learning algorithm used for classification and regression tasks. It works by splitting the data one feature at a time. At each step, the tree makes a decision based on a threshold for that feature, moving from the root node through a series of decisions until it reaches a final prediction. This process creates a tree-like structure from the root to the leaves.
+Think of it like this: when guessing a pizza topping...<br>
+Is it green? ➔ Nope!<br>
+Is it yellow? ➔ Yup!<br>
+Is it sweet? ➔ Yeah!<br>
+Is it tropical? ➔ You bet!<br>
+Does it go on pizza? ➔ Absolutely!<br>
+It's pineapple! 🍍<br>
+
+The decision on each node is made by minimizing the Gini index (or impurity) to maximize information gain, which measures how well a given feature separates the data according to the target classification.
+
+#### Strengths
+- **Interpretability**: Decision Trees are highly interpretable. You can visualize the decision-making process, making it easy to understand how predictions are made.
+- **Works Well with Non-linear Data**: Decision Trees can model complex decision boundaries, making them effective for tasks where relationships between features are non-linear.
+- **Easy to Work With**: Decision Trees handle missing values seamlessly and do not require scaling or normalization. They are also invariant to feature scaling and do not need to address multicollinearity.
+
+#### Weaknesses
+- **Prone to Overfitting**: Decision Trees tend to overfit, especially when the tree is deep. They can become too complex and memorize the training data, leading to poor generalization on unseen data.
+- **Instability**: Small changes in the data can lead to large changes in the structure of the tree, making them less robust.
+- **Greedy Nature**: Decision trees are greedy algorithms, meaning they make the locally optimal choice at each node, which doesn’t always lead to the globally optimal tree.
+
+#### Code Snippet
+``` {python echo = True}
+import time
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Load dataset
+data = load_iris()
+X = data.data
+y = data.target
+
+# Split data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+
+# Train Decision Tree
+start_time = time.time()
+tree = DecisionTreeClassifier(random_state=42, max_depth=2)
+tree.fit(X_train, y_train)
+tree_time = time.time() - start_time
+
+# Predict and evaluate
+y_pred = tree.predict(X_test)
+print(f"Decision Tree Accuracy: {accuracy_score(y_test, y_pred):.4f}")
+print(f"Time taken for Decision Tree: {tree_time:.4f} seconds")
+```
+Where `max_depth`: The maximum depth of the tree. None means the tree will continue expanding until all leaves are pure or contain fewer than min_samples_split samples.
+
+
+## What are Random Forests?
+
+A Random Forest is an ensemble learning method that builds multiple Decision Trees and combines their results to make a final prediction. Each tree in the forest is a decision tree like the ones we discussed earlier, but instead of making the final decision on its own, each tree "votes." The idea is that by combining many weak models (individual Decision Trees), the ensemble model can make a more accurate and robust prediction.
+Random Forests use two main techniques to improve accuracy and reduce variance:
+
+* Bootstrapping: Each tree is trained on a random subset of the original data, chosen with replacement. This process is called bagging (bootstrap aggregating).
+* Feature Randomness: At each split, a random subset of features is considered, which helps reduce correlation between trees and improves generalization.
+
+Recall how one decision tree identified pineapple on pizza. This is how a random fores makes it decisions...
+
+Tree 1: Pineapple 🍍<br>
+Tree 2: Mango 🥭<br>
+Tree 3: Pineapple 🍍<br>
+Tree 4: Pineapple 🍍<br>
+Tree 5: Mango 🥭<br>
+
+The Random Forest will make its final prediction based on the majority vote (in this case, Pineapple 🍍).
+
+#### Strengths
+- **Accuracy**: Random Forests typically outperform individual Decision Trees by reducing overfitting and providing better generalization to new data.
+- **Robustness**: The use of multiple trees makes Random Forests less sensitive to noisy data. Even if some trees perform poorly, the overall model remains strong.
+- **Automatic Feature Selection**: Random Forests can identify the most important features for making predictions, helping to focus on the most relevant variables.
+
+#### Weaknesses
+- **Interpretability**: Random Forests are harder to interpret than single Decision Trees. While feature importance can be determined, understanding how each feature contributes across many trees is more complex.
+- **Computation Time**: Training a Random Forest involves building many Decision Trees, which can be computationally expensive, especially with large datasets.
+- **Memory Usage***: The model size can grow quickly as more trees are added, requiring significant memory and storage.
+
+#### Code Snippet
+``` {python echo = True}
+import time
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+
+# Load dataset
+data = load_iris()
+X = data.data
+y = data.target
+
+# Split data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+
+# Train Random Forest
+start_time = time.time()
+forest = RandomForestClassifier(n_estimators=20, max_depth= 2, random_state=42)
+forest.fit(X_train, y_train)
+forest_time = time.time() - start_time
+
+# Predict and evaluate
+y_pred = forest.predict(X_test)
+print(f"Random Forest Accuracy: {accuracy_score(y_test, y_pred):.4f}")
+print(f"Time taken for Random Forest: {forest_time:.4f} seconds")
+
+```
+
+Where `n_estimators`: The number of decision trees in the forest, <br>
+`criterion`: The function to measure the quality of a split (like 'gini' for Gini impurity) and <br>
+`max_depth`: The maximum depth of the trees. None means the tree will expand until all leaves are pure or contain fewer than min_samples_split samples.
+
+
+## Decision Tree vs. Random Forest: The Ultimate Guide
+
+| **Use Case**                                   | **Verdict**      | **Reason**                                                                                             |
+|------------------------------------------------|------------------|--------------------------------------------------------------------------------------------------------|
+| When you want to train the model faster        | Decision Tree    | Decision Trees train faster because they use a single tree structure, while Random Forest builds multiple trees. |
+| When you want to reduce overfitting            | Random Forest    | Random Forest reduces overfitting by averaging the results of multiple trees, reducing variance.         |
+| When you want interpretability                 | Decision Tree    | Decision Trees are more interpretable and easier to visualize, making them ideal for explainable models. |
+| When your data has complex relationships       | Random Forest    | Random Forest can capture complex nonlinear relationships and interactions between features.            |
+| When you need a robust model                   | Random Forest    | Random Forest averages multiple decision trees, making it more robust to noise and overfitting.          |
+| When you want to handle missing values         | Random Forest    | Random Forest can impute missing values by leveraging different trees, improving its robustness.         |
+| When you need real-time predictions            | Decision Tree    | Decision Trees are faster for real-time predictions because they only require traversing a single tree.  |
+| When model complexity is a concern             | Decision Tree    | A single Decision Tree is simpler and requires less computational power than Random Forest.             |
+| When working with large datasets               | Random Forest    | Random Forest is better for large datasets because it handles high-dimensional data and reduces variance. |
+| When you want feature importance               | Random Forest    | Random Forest provides more reliable feature importance metrics by aggregating across multiple trees.    |
+| When you need computational efficiency         | Decision Tree    | Decision Trees are more computationally efficient and require less memory compared to Random Forests.   |
+| When you need out-of-bag error estimation      | Random Forest    | Random Forest has built-in out-of-bag (OOB) error estimation, allowing for model validation without a separate validation set. |
+
+
+## Real-word Applications
+
+* **Healthcare**: <br>
+**Decision Trees**: Used for creating simple diagnostic rules, like checking if a patient has symptoms A, B, and C to predict a condition (e.g., flu or no flu). <br>
+**Random Forests**: Applied to more complex tasks, like predicting the risk of diseases based on a variety of factors such as lifestyle, genetics, and environmental data.
+<br>
+* **Finance**:<br>
+**Decision Trees**: Help decide whether a loan should be approved based on factors like income and credit score.
+**Random Forests**: Used to identify fraud in transactions by considering multiple factors, such as past behavior, transaction amount, and location, making the prediction more accurate.
+
+## Conclusion
+To sum up, the choice between Decision Trees and Random Forests depends on your model's needs. For more complex data, higher accuracy, and reduced overfitting, the more, the merrier—Random Forests are the way to go. But for simpler, faster, and more interpretable predictions, too many cooks spoil the broth, and Decision Trees are ideal.
